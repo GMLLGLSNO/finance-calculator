@@ -230,6 +230,12 @@ form.addEventListener('submit', async (e) => {
     } else {
         // Collect all custom payments
         const paymentEntries = document.querySelectorAll('.custom-payment-entry');
+        
+        if (paymentEntries.length === 0) {
+            showError('Please add at least one custom payment.');
+            return;
+        }
+        
         for (let entry of paymentEntries) {
             const amount = entry.querySelector('.customPaymentAmount').value;
             const date = entry.querySelector('.customPaymentDate').value;
@@ -239,8 +245,14 @@ form.addEventListener('submit', async (e) => {
                 return;
             }
             
+            const parsedAmount = parseFloat(amount);
+            if (isNaN(parsedAmount) || parsedAmount <= 0) {
+                showError('All payment amounts must be valid positive numbers.');
+                return;
+            }
+            
             customPayments.push({
-                amount: parseFloat(amount),
+                amount: parsedAmount,
                 date: date
             });
         }
