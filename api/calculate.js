@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { creditLimit, balance, interestRate, payment, gracePeriod } = req.body;
+    const { creditLimit, balance, interestRate, payment, gracePeriod, startDate, endDate } = req.body;
 
     // Validate inputs
     if (balance === undefined || balance === null || interestRate === undefined || interestRate === null || payment === undefined || payment === null) {
@@ -46,6 +46,36 @@ module.exports = async (req, res) => {
       return;
     }
 
+    // Calculate interest between dates if provided
+    let dateInterestData = null;
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      
+      if (end <= start) {
+        res.status(400).json({ error: 'End date must be after start date' });
+        return;
+      }
+
+      // Calculate days between dates
+      const daysDiff = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+      
+      // Calculate daily interest rate
+      const dailyRate = annualRate / 100 / 365;
+      
+      // Calculate interest for the period
+      const periodInterest = currentBalance * dailyRate * daysDiff;
+      
+      // Format date range
+      const dateRange = `${start.toLocaleDateString('en-US')} to ${end.toLocaleDateString('en-US')}`;
+      
+      dateInterestData = {
+        dateRange: dateRange,
+        days: daysDiff,
+        interest: parseFloat(periodInterest.toFixed(2))
+      };
+    }
+
     if (currentBalance === 0) {
       res.status(200).json({
         monthlyInterest: 0,
@@ -53,7 +83,8 @@ module.exports = async (req, res) => {
         newBalance: 0,
         monthsToPayOff: 0,
         totalInterestPaid: 0,
-        amortizationSchedule: []
+        amortizationSchedule: [],
+        dateInterest: dateInterestData
       });
       return;
     }
@@ -128,7 +159,8 @@ module.exports = async (req, res) => {
       newBalance: parseFloat(newBalance.toFixed(2)),
       monthsToPayOff: monthsToPayOff,
       totalInterestPaid: parseFloat(totalInterestPaid.toFixed(2)),
-      amortizationSchedule: amortizationSchedule
+      amortizationSchedule: amortizationSchedule,
+      dateInterest: dateInterestData
     });
 
   } catch (error) {

@@ -149,6 +149,61 @@ header h1 {
     font-size: 0.8em;
 }
 
+.date-interest-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.date-interest-section.hidden {
+    display: none;
+}
+
+.date-interest-section h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+.date-interest-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.date-range p {
+    margin: 8px 0;
+    color: #555;
+}
+
+.date-range strong {
+    color: #333;
+}
+
+.interest-amount {
+    text-align: center;
+    padding: 15px 30px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.interest-amount .label {
+    font-size: 0.9em;
+    color: #777;
+    margin-bottom: 5px;
+}
+
+.interest-amount .value {
+    font-size: 2em;
+    font-weight: 700;
+    color: #667eea;
+}
+
 .amortization-section {
     margin-top: 30px;
 }

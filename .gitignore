@@ -7,3 +7,5 @@ dist/
 .DS_Store
 test-api.js
 server.js
+test-date-interest.js
+test-server.js

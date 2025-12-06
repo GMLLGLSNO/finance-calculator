@@ -48,6 +48,18 @@
                         <small>Optional: Months with no interest charged</small>
                     </div>
 
+                    <div class="form-group">
+                        <label for="startDate">Start Date (for interest calculation)</label>
+                        <input type="date" id="startDate" name="startDate">
+                        <small>Optional: Calculate interest from this date</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endDate">End Date (for interest calculation)</label>
+                        <input type="date" id="endDate" name="endDate">
+                        <small>Optional: Calculate interest to this date</small>
+                    </div>
+
                     <button type="submit" class="btn-calculate">Calculate</button>
                 </div>
             </form>
@@ -85,6 +97,20 @@
                             <h3>Total Interest</h3>
                             <p class="value" id="totalInterest">$0.00</p>
                             <small>Total interest you'll pay</small>
+                        </div>
+                    </div>
+
+                    <div id="dateInterestSection" class="date-interest-section hidden">
+                        <h3>📆 Interest Between Dates</h3>
+                        <div class="date-interest-card">
+                            <div class="date-range">
+                                <p><strong>Period:</strong> <span id="dateRange">-</span></p>
+                                <p><strong>Days:</strong> <span id="daysBetween">-</span></p>
+                            </div>
+                            <div class="interest-amount">
+                                <p class="label">Interest Accrued</p>
+                                <p class="value" id="dateInterestAmount">$0.00</p>
+                            </div>
                         </div>
                     </div>
                 </div>

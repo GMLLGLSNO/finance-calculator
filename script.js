@@ -61,6 +61,17 @@ function displayResults(data) {
     
     document.getElementById('payoffTime').textContent = payoffText;
 
+    // Display date interest calculation if available
+    const dateInterestSection = document.getElementById('dateInterestSection');
+    if (data.dateInterest) {
+        document.getElementById('dateRange').textContent = data.dateInterest.dateRange;
+        document.getElementById('daysBetween').textContent = data.dateInterest.days;
+        document.getElementById('dateInterestAmount').textContent = formatCurrency(data.dateInterest.interest);
+        dateInterestSection.classList.remove('hidden');
+    } else {
+        dateInterestSection.classList.add('hidden');
+    }
+
     // Clear and populate amortization table
     amortizationBody.innerHTML = '';
     
@@ -94,6 +105,8 @@ form.addEventListener('submit', async (e) => {
     const interestRate = document.getElementById('interestRate').value;
     const payment = document.getElementById('payment').value;
     const gracePeriod = document.getElementById('gracePeriod').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
 
     // Validate required fields
     if (!balance || !interestRate || !payment) {
@@ -113,13 +126,26 @@ form.addEventListener('submit', async (e) => {
         return;
     }
 
+    // Validate date range if dates are provided
+    if ((startDate && !endDate) || (!startDate && endDate)) {
+        showError('Please provide both start and end dates for interest calculation.');
+        return;
+    }
+
+    if (startDate && endDate && new Date(startDate) >= new Date(endDate)) {
+        showError('End date must be after start date.');
+        return;
+    }
+
     // Prepare request data
     const requestData = {
         creditLimit: creditLimit || 0,
         balance: balance,
         interestRate: interestRate,
         payment: payment,
-        gracePeriod: gracePeriod || 0
+        gracePeriod: gracePeriod || 0,
+        startDate: startDate || null,
+        endDate: endDate || null
     };
 
     try {
