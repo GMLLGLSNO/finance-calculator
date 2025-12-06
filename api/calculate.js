@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
     const { creditLimit, balance, interestRate, payment, gracePeriod } = req.body;
 
     // Validate inputs
-    if (!balance || !interestRate || !payment) {
+    if (balance === undefined || balance === null || interestRate === undefined || interestRate === null || payment === undefined || payment === null) {
       res.status(400).json({ error: 'Missing required parameters: balance, interestRate, payment' });
       return;
     }
