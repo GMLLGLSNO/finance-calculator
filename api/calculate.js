@@ -58,9 +58,11 @@ module.exports = async (req, res) => {
       }
 
       // Calculate days between dates
+      // Uses simple date arithmetic for date-only inputs (no time components)
       const daysDiff = Math.floor((end - start) / (1000 * 60 * 60 * 24));
       
-      // Calculate daily interest rate
+      // Calculate daily interest rate using standard 365-day convention
+      // This is the industry-standard approximation for converting APR to daily rate
       const dailyRate = annualRate / 100 / 365;
       
       // Calculate interest for the period

@@ -127,6 +127,8 @@ form.addEventListener('submit', async (e) => {
     }
 
     // Validate date range if dates are provided
+    // Note: This validation is intentionally duplicated on the server side for security
+    // Client-side validation provides immediate feedback, server-side ensures data integrity
     if ((startDate && !endDate) || (!startDate && endDate)) {
         showError('Please provide both start and end dates for interest calculation.');
         return;
