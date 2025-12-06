@@ -37,9 +37,36 @@
                     </div>
 
                     <div class="form-group">
+                        <label>Payment Mode *</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="paymentMode" value="monthly" checked>
+                                <span>Monthly Payment</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="paymentMode" value="custom">
+                                <span>Custom Payment</span>
+                            </label>
+                        </div>
+                        <small>Choose payment frequency</small>
+                    </div>
+
+                    <div class="form-group" id="monthlyPaymentGroup">
                         <label for="payment">Monthly Payment ($) *</label>
-                        <input type="number" id="payment" name="payment" step="0.01" min="0" required placeholder="e.g., 150">
-                        <small>Required: Amount you plan to pay monthly</small>
+                        <input type="number" id="payment" name="payment" step="0.01" min="0" placeholder="e.g., 150">
+                        <small>Amount you plan to pay monthly</small>
+                    </div>
+
+                    <div class="form-group hidden" id="customPaymentGroup">
+                        <label for="customPaymentAmount">Payment Amount ($) *</label>
+                        <input type="number" id="customPaymentAmount" name="customPaymentAmount" step="0.01" min="0" placeholder="e.g., 500">
+                        <small>Amount of your payment</small>
+                    </div>
+
+                    <div class="form-group hidden" id="customPaymentDateGroup">
+                        <label for="customPaymentDate">Payment Date *</label>
+                        <input type="date" id="customPaymentDate" name="customPaymentDate">
+                        <small>When the payment was or will be made</small>
                     </div>
 
                     <div class="form-group">
@@ -97,6 +124,19 @@
                             <h3>Total Interest</h3>
                             <p class="value" id="totalInterest">$0.00</p>
                             <small>Total interest you'll pay</small>
+                        </div>
+                    </div>
+
+                    <div id="customPaymentSection" class="custom-payment-section hidden">
+                        <h3>💰 Custom Payment Details</h3>
+                        <div class="custom-payment-card">
+                            <div class="payment-details">
+                                <p><strong>Payment Date:</strong> <span id="customPaymentDateDisplay">-</span></p>
+                                <p><strong>Days Until Payment:</strong> <span id="daysUntilPayment">-</span></p>
+                                <p><strong>Interest Until Payment:</strong> <span id="interestUntilPayment">$0.00</span></p>
+                                <p><strong>Balance at Payment:</strong> <span id="balanceAtPayment">$0.00</span></p>
+                                <p><strong>Balance After Payment:</strong> <span id="balanceAfterPayment" class="highlight">$0.00</span></p>
+                            </div>
                         </div>
                     </div>
 

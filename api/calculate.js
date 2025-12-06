@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { creditLimit, balance, interestRate, payment, gracePeriod, startDate, endDate } = req.body;
+    const { creditLimit, balance, interestRate, payment, gracePeriod, startDate, endDate, paymentMode, customPaymentDate } = req.body;
 
     // Validate inputs
     if (balance === undefined || balance === null || interestRate === undefined || interestRate === null || payment === undefined || payment === null) {
@@ -34,6 +34,7 @@ module.exports = async (req, res) => {
     const monthlyPayment = parseFloat(payment);
     const grace = parseInt(gracePeriod) || 0;
     const limit = parseFloat(creditLimit) || 0;
+    const mode = paymentMode || 'monthly';
 
     // Validate numeric values
     if (isNaN(currentBalance) || isNaN(annualRate) || isNaN(monthlyPayment)) {
@@ -44,6 +45,30 @@ module.exports = async (req, res) => {
     if (currentBalance < 0 || annualRate < 0 || monthlyPayment < 0) {
       res.status(400).json({ error: 'Values cannot be negative' });
       return;
+    }
+
+    // Handle custom payment mode
+    let customPaymentInfo = null;
+    if (mode === 'custom' && customPaymentDate) {
+      const paymentDate = new Date(customPaymentDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      paymentDate.setHours(0, 0, 0, 0);
+      
+      // Calculate days from today to payment date
+      const daysDiff = Math.floor((paymentDate - today) / (1000 * 60 * 60 * 24));
+      
+      // Calculate interest accrued until payment date
+      const dailyRate = annualRate / 100 / 365;
+      const interestUntilPayment = currentBalance * dailyRate * Math.abs(daysDiff);
+      
+      customPaymentInfo = {
+        paymentDate: paymentDate.toLocaleDateString('en-US'),
+        daysUntilPayment: daysDiff,
+        interestUntilPayment: parseFloat(interestUntilPayment.toFixed(2)),
+        balanceAtPayment: parseFloat((currentBalance + interestUntilPayment).toFixed(2)),
+        balanceAfterPayment: parseFloat(Math.max(0, currentBalance + interestUntilPayment - monthlyPayment).toFixed(2))
+      };
     }
 
     // Calculate interest between dates if provided
@@ -162,7 +187,9 @@ module.exports = async (req, res) => {
       monthsToPayOff: monthsToPayOff,
       totalInterestPaid: parseFloat(totalInterestPaid.toFixed(2)),
       amortizationSchedule: amortizationSchedule,
-      dateInterest: dateInterestData
+      dateInterest: dateInterestData,
+      customPayment: customPaymentInfo,
+      paymentMode: mode
     });
 
   } catch (error) {

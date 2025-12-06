@@ -9,6 +9,36 @@ const resultsDiv = document.getElementById('results');
 const errorDiv = document.getElementById('error');
 const amortizationBody = document.getElementById('amortizationBody');
 
+// Payment mode handling
+const paymentModeRadios = document.querySelectorAll('input[name="paymentMode"]');
+const monthlyPaymentGroup = document.getElementById('monthlyPaymentGroup');
+const customPaymentGroup = document.getElementById('customPaymentGroup');
+const customPaymentDateGroup = document.getElementById('customPaymentDateGroup');
+const monthlyPaymentInput = document.getElementById('payment');
+const customPaymentAmountInput = document.getElementById('customPaymentAmount');
+const customPaymentDateInput = document.getElementById('customPaymentDate');
+
+// Handle payment mode switching
+paymentModeRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+        if (this.value === 'monthly') {
+            monthlyPaymentGroup.classList.remove('hidden');
+            customPaymentGroup.classList.add('hidden');
+            customPaymentDateGroup.classList.add('hidden');
+            monthlyPaymentInput.required = true;
+            customPaymentAmountInput.required = false;
+            customPaymentDateInput.required = false;
+        } else {
+            monthlyPaymentGroup.classList.add('hidden');
+            customPaymentGroup.classList.remove('hidden');
+            customPaymentDateGroup.classList.remove('hidden');
+            monthlyPaymentInput.required = false;
+            customPaymentAmountInput.required = true;
+            customPaymentDateInput.required = true;
+        }
+    });
+});
+
 // Format currency
 function formatCurrency(amount) {
     return new Intl.NumberFormat('en-US', {
@@ -61,6 +91,19 @@ function displayResults(data) {
     
     document.getElementById('payoffTime').textContent = payoffText;
 
+    // Display custom payment information if available
+    const customPaymentSection = document.getElementById('customPaymentSection');
+    if (data.customPayment) {
+        document.getElementById('customPaymentDateDisplay').textContent = data.customPayment.paymentDate;
+        document.getElementById('daysUntilPayment').textContent = data.customPayment.daysUntilPayment + ' days';
+        document.getElementById('interestUntilPayment').textContent = formatCurrency(data.customPayment.interestUntilPayment);
+        document.getElementById('balanceAtPayment').textContent = formatCurrency(data.customPayment.balanceAtPayment);
+        document.getElementById('balanceAfterPayment').textContent = formatCurrency(data.customPayment.balanceAfterPayment);
+        customPaymentSection.classList.remove('hidden');
+    } else {
+        customPaymentSection.classList.add('hidden');
+    }
+
     // Display date interest calculation if available
     const dateInterestSection = document.getElementById('dateInterestSection');
     if (data.dateInterest) {
@@ -103,14 +146,34 @@ form.addEventListener('submit', async (e) => {
     const creditLimit = document.getElementById('creditLimit').value;
     const balance = document.getElementById('balance').value;
     const interestRate = document.getElementById('interestRate').value;
-    const payment = document.getElementById('payment').value;
     const gracePeriod = document.getElementById('gracePeriod').value;
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
+    
+    // Get payment mode
+    const paymentMode = document.querySelector('input[name="paymentMode"]:checked').value;
+    let payment, customPaymentAmount, customPaymentDate;
+    
+    if (paymentMode === 'monthly') {
+        payment = document.getElementById('payment').value;
+        if (!payment) {
+            showError('Please enter the monthly payment amount.');
+            return;
+        }
+    } else {
+        customPaymentAmount = document.getElementById('customPaymentAmount').value;
+        customPaymentDate = document.getElementById('customPaymentDate').value;
+        if (!customPaymentAmount || !customPaymentDate) {
+            showError('Please enter both payment amount and payment date for custom payment mode.');
+            return;
+        }
+        // For custom mode, use the custom amount as the payment
+        payment = customPaymentAmount;
+    }
 
     // Validate required fields
-    if (!balance || !interestRate || !payment) {
-        showError('Please fill in all required fields (Balance, Interest Rate, and Payment).');
+    if (!balance || !interestRate) {
+        showError('Please fill in all required fields (Balance and Interest Rate).');
         return;
     }
 
@@ -147,7 +210,9 @@ form.addEventListener('submit', async (e) => {
         payment: payment,
         gracePeriod: gracePeriod || 0,
         startDate: startDate || null,
-        endDate: endDate || null
+        endDate: endDate || null,
+        paymentMode: paymentMode,
+        customPaymentDate: paymentMode === 'custom' ? customPaymentDate : null
     };
 
     try {
