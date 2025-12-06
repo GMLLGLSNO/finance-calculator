@@ -13,10 +13,8 @@ const amortizationBody = document.getElementById('amortizationBody');
 const paymentModeRadios = document.querySelectorAll('input[name="paymentMode"]');
 const monthlyPaymentGroup = document.getElementById('monthlyPaymentGroup');
 const customPaymentGroup = document.getElementById('customPaymentGroup');
-const customPaymentDateGroup = document.getElementById('customPaymentDateGroup');
 const monthlyPaymentInput = document.getElementById('payment');
-const customPaymentAmountInput = document.getElementById('customPaymentAmount');
-const customPaymentDateInput = document.getElementById('customPaymentDate');
+let paymentCounter = 1;
 
 // Handle payment mode switching
 paymentModeRadios.forEach(radio => {
@@ -30,17 +28,11 @@ paymentModeRadios.forEach(radio => {
         if (this.value === 'monthly') {
             monthlyPaymentGroup.classList.remove('hidden');
             customPaymentGroup.classList.add('hidden');
-            customPaymentDateGroup.classList.add('hidden');
             monthlyPaymentInput.required = true;
-            customPaymentAmountInput.required = false;
-            customPaymentDateInput.required = false;
         } else {
             monthlyPaymentGroup.classList.add('hidden');
             customPaymentGroup.classList.remove('hidden');
-            customPaymentDateGroup.classList.remove('hidden');
             monthlyPaymentInput.required = false;
-            customPaymentAmountInput.required = true;
-            customPaymentDateInput.required = true;
         }
     });
 });
@@ -49,6 +41,54 @@ paymentModeRadios.forEach(radio => {
 const checkedRadio = document.querySelector('input[name="paymentMode"]:checked');
 if (checkedRadio) {
     checkedRadio.closest('.radio-option').classList.add('selected');
+}
+
+// Add payment functionality
+document.getElementById('btnAddPayment').addEventListener('click', function() {
+    const paymentsList = document.getElementById('customPaymentsList');
+    const newEntry = document.createElement('div');
+    newEntry.className = 'custom-payment-entry';
+    newEntry.setAttribute('data-index', paymentCounter);
+    newEntry.innerHTML = `
+        <div class="payment-fields">
+            <div class="field-group">
+                <label>Amount ($)</label>
+                <input type="number" class="customPaymentAmount" step="0.01" min="0" placeholder="e.g., 500">
+            </div>
+            <div class="field-group">
+                <label>Date</label>
+                <input type="date" class="customPaymentDate">
+            </div>
+            <button type="button" class="btn-remove-payment" onclick="removePayment(${paymentCounter})">✖</button>
+        </div>
+    `;
+    paymentsList.appendChild(newEntry);
+    paymentCounter++;
+    
+    // Show remove buttons on all entries when there's more than one
+    updateRemoveButtons();
+});
+
+// Remove payment function
+window.removePayment = function(index) {
+    const entry = document.querySelector(`.custom-payment-entry[data-index="${index}"]`);
+    if (entry) {
+        entry.remove();
+        updateRemoveButtons();
+    }
+};
+
+// Update remove buttons visibility
+function updateRemoveButtons() {
+    const entries = document.querySelectorAll('.custom-payment-entry');
+    entries.forEach((entry, idx) => {
+        const removeBtn = entry.querySelector('.btn-remove-payment');
+        if (entries.length > 1) {
+            removeBtn.style.display = 'block';
+        } else {
+            removeBtn.style.display = 'none';
+        }
+    });
 }
 
 // Format currency
@@ -106,11 +146,25 @@ function displayResults(data) {
     // Display custom payment information if available
     const customPaymentSection = document.getElementById('customPaymentSection');
     if (data.customPayment) {
-        document.getElementById('customPaymentDateDisplay').textContent = data.customPayment.paymentDate;
-        document.getElementById('daysUntilPayment').textContent = data.customPayment.daysUntilPayment + ' days';
-        document.getElementById('interestUntilPayment').textContent = formatCurrency(data.customPayment.interestUntilPayment);
-        document.getElementById('balanceAtPayment').textContent = formatCurrency(data.customPayment.balanceAtPayment);
-        document.getElementById('balanceAfterPayment').textContent = formatCurrency(data.customPayment.balanceAfterPayment);
+        const paymentsHtml = data.customPayment.payments.map(p => `
+            <div class="payment-detail-row">
+                <div class="payment-info">
+                    <strong>Payment #${p.paymentNumber}</strong> - ${p.paymentDate}
+                </div>
+                <div class="payment-amounts">
+                    <span>Payment: ${formatCurrency(p.paymentAmount)}</span> | 
+                    <span>Days: ${p.daysFromToday}</span> | 
+                    <span>Interest: ${formatCurrency(p.interestAccrued)}</span> | 
+                    <span>Balance After: ${formatCurrency(p.balanceAfterPayment)}</span>
+                </div>
+            </div>
+        `).join('');
+        
+        document.getElementById('customPaymentsDisplay').innerHTML = paymentsHtml;
+        document.getElementById('totalCustomPayments').textContent = data.customPayment.totalPayments;
+        document.getElementById('totalPaidAmount').textContent = formatCurrency(data.customPayment.totalPaid);
+        document.getElementById('totalInterestAccrued').textContent = formatCurrency(data.customPayment.totalInterestAccrued);
+        document.getElementById('finalBalanceAfterPayments').textContent = formatCurrency(data.customPayment.finalBalance);
         customPaymentSection.classList.remove('hidden');
     } else {
         customPaymentSection.classList.add('hidden');
@@ -165,7 +219,7 @@ form.addEventListener('submit', async (e) => {
     // Get payment mode
     const paymentModeElement = document.querySelector('input[name="paymentMode"]:checked');
     const paymentMode = paymentModeElement ? paymentModeElement.value : 'monthly';
-    let payment, customPaymentAmount, customPaymentDate;
+    let payment, customPayments = [];
     
     if (paymentMode === 'monthly') {
         payment = document.getElementById('payment').value;
@@ -174,14 +228,28 @@ form.addEventListener('submit', async (e) => {
             return;
         }
     } else {
-        customPaymentAmount = document.getElementById('customPaymentAmount').value;
-        customPaymentDate = document.getElementById('customPaymentDate').value;
-        if (!customPaymentAmount || !customPaymentDate) {
-            showError('Please enter both payment amount and payment date for custom payment mode.');
-            return;
+        // Collect all custom payments
+        const paymentEntries = document.querySelectorAll('.custom-payment-entry');
+        for (let entry of paymentEntries) {
+            const amount = entry.querySelector('.customPaymentAmount').value;
+            const date = entry.querySelector('.customPaymentDate').value;
+            
+            if (!amount || !date) {
+                showError('Please enter both amount and date for all custom payments.');
+                return;
+            }
+            
+            customPayments.push({
+                amount: parseFloat(amount),
+                date: date
+            });
         }
-        // For custom mode, use the custom amount as the payment
-        payment = customPaymentAmount;
+        
+        // Sort payments by date
+        customPayments.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        // Use first payment amount for initial calculation
+        payment = customPayments[0].amount;
     }
 
     // Validate required fields
@@ -225,7 +293,7 @@ form.addEventListener('submit', async (e) => {
         startDate: startDate || null,
         endDate: endDate || null,
         paymentMode: paymentMode,
-        customPaymentDate: paymentMode === 'custom' ? customPaymentDate : null
+        customPayments: paymentMode === 'custom' ? customPayments : null
     };
 
     try {

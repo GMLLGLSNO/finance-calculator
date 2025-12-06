@@ -125,6 +125,79 @@ header h1 {
     background: #f0f3ff;
 }
 
+.custom-payment-entry {
+    margin-bottom: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.payment-fields {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.field-group {
+    flex: 1;
+}
+
+.field-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #555;
+    font-size: 0.9em;
+}
+
+.field-group input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1em;
+}
+
+.field-group input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn-remove-payment {
+    padding: 10px 15px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.2em;
+    line-height: 1;
+    transition: background 0.2s;
+}
+
+.btn-remove-payment:hover {
+    background: #c82333;
+}
+
+.btn-add-payment {
+    width: 100%;
+    padding: 12px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 10px;
+}
+
+.btn-add-payment:hover {
+    background: #218838;
+}
+
 .btn-calculate {
     width: 100%;
     padding: 15px;
@@ -218,22 +291,56 @@ header h1 {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.payment-details p {
-    margin: 10px 0;
+.payment-summary {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.payment-summary p {
+    margin: 8px 0;
     color: #555;
     font-size: 1em;
 }
 
-.payment-details strong {
+.payment-summary strong {
     color: #333;
     display: inline-block;
-    min-width: 180px;
+    min-width: 200px;
 }
 
-.payment-details .highlight {
-    font-size: 1.2em;
+.payment-summary .highlight {
+    font-size: 1.3em;
     font-weight: 700;
     color: #2e7d32;
+}
+
+.payments-list {
+    margin-top: 20px;
+}
+
+.payment-detail-row {
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #f0f3ff;
+    border-left: 4px solid #667eea;
+    border-radius: 4px;
+}
+
+.payment-info {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.payment-amounts {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.payment-amounts span {
+    margin-right: 10px;
 }
 
 .date-interest-section {

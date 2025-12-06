@@ -58,15 +58,24 @@
                     </div>
 
                     <div class="form-group hidden" id="customPaymentGroup">
-                        <label for="customPaymentAmount">Payment Amount ($) *</label>
-                        <input type="number" id="customPaymentAmount" name="customPaymentAmount" step="0.01" min="0" placeholder="e.g., 500">
-                        <small>Amount of your payment</small>
-                    </div>
-
-                    <div class="form-group hidden" id="customPaymentDateGroup">
-                        <label for="customPaymentDate">Payment Date *</label>
-                        <input type="date" id="customPaymentDate" name="customPaymentDate">
-                        <small>When the payment was or will be made</small>
+                        <label>Custom Payments</label>
+                        <div id="customPaymentsList">
+                            <div class="custom-payment-entry" data-index="0">
+                                <div class="payment-fields">
+                                    <div class="field-group">
+                                        <label>Amount ($)</label>
+                                        <input type="number" class="customPaymentAmount" step="0.01" min="0" placeholder="e.g., 500">
+                                    </div>
+                                    <div class="field-group">
+                                        <label>Date</label>
+                                        <input type="date" class="customPaymentDate">
+                                    </div>
+                                    <button type="button" class="btn-remove-payment" onclick="removePayment(0)" style="display: none;">✖</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" id="btnAddPayment" class="btn-add-payment">+ Add Another Payment</button>
+                        <small>Add one or more custom payments with amounts and dates</small>
                     </div>
 
                     <div class="form-group">
@@ -130,12 +139,14 @@
                     <div id="customPaymentSection" class="custom-payment-section hidden">
                         <h3>💰 Custom Payment Details</h3>
                         <div class="custom-payment-card">
-                            <div class="payment-details">
-                                <p><strong>Payment Date:</strong> <span id="customPaymentDateDisplay">-</span></p>
-                                <p><strong>Days Until Payment:</strong> <span id="daysUntilPayment">-</span></p>
-                                <p><strong>Interest Until Payment:</strong> <span id="interestUntilPayment">$0.00</span></p>
-                                <p><strong>Balance at Payment:</strong> <span id="balanceAtPayment">$0.00</span></p>
-                                <p><strong>Balance After Payment:</strong> <span id="balanceAfterPayment" class="highlight">$0.00</span></p>
+                            <div class="payment-summary">
+                                <p><strong>Total Payments:</strong> <span id="totalCustomPayments">0</span></p>
+                                <p><strong>Total Paid:</strong> <span id="totalPaidAmount">$0.00</span></p>
+                                <p><strong>Total Interest Accrued:</strong> <span id="totalInterestAccrued">$0.00</span></p>
+                                <p><strong>Final Balance:</strong> <span id="finalBalanceAfterPayments" class="highlight">$0.00</span></p>
+                            </div>
+                            <div id="customPaymentsDisplay" class="payments-list">
+                                <!-- Payment details will be inserted here -->
                             </div>
                         </div>
                     </div>

@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { creditLimit, balance, interestRate, payment, gracePeriod, startDate, endDate, paymentMode, customPaymentDate } = req.body;
+    const { creditLimit, balance, interestRate, payment, gracePeriod, startDate, endDate, paymentMode, customPayments } = req.body;
 
     // Validate inputs
     if (balance === undefined || balance === null || interestRate === undefined || interestRate === null || payment === undefined || payment === null) {
@@ -47,27 +47,49 @@ module.exports = async (req, res) => {
       return;
     }
 
-    // Handle custom payment mode
+    // Handle custom payment mode with multiple payments
     let customPaymentInfo = null;
-    if (mode === 'custom' && customPaymentDate) {
-      const paymentDate = new Date(customPaymentDate);
+    if (mode === 'custom' && customPayments && Array.isArray(customPayments)) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      paymentDate.setHours(0, 0, 0, 0);
-      
-      // Calculate days from today to payment date
-      const daysDiff = Math.floor((paymentDate - today) / (1000 * 60 * 60 * 24));
-      
-      // Calculate interest accrued until payment date
       const dailyRate = annualRate / 100 / 365;
-      const interestUntilPayment = currentBalance * dailyRate * Math.abs(daysDiff);
+      
+      let runningBalance = currentBalance;
+      const paymentDetails = [];
+      
+      for (let i = 0; i < customPayments.length; i++) {
+        const paymentData = customPayments[i];
+        const paymentDate = new Date(paymentData.date);
+        paymentDate.setHours(0, 0, 0, 0);
+        
+        // Calculate days from today (or last payment) to this payment date
+        const daysDiff = Math.floor((paymentDate - today) / (1000 * 60 * 60 * 24));
+        
+        // Calculate interest accrued until this payment date
+        const interestAccrued = runningBalance * dailyRate * Math.abs(daysDiff);
+        const balanceAtPayment = runningBalance + interestAccrued;
+        const balanceAfterPayment = Math.max(0, balanceAtPayment - parseFloat(paymentData.amount));
+        
+        paymentDetails.push({
+          paymentNumber: i + 1,
+          paymentDate: paymentDate.toLocaleDateString('en-US'),
+          paymentAmount: parseFloat(paymentData.amount),
+          daysFromToday: daysDiff,
+          interestAccrued: parseFloat(interestAccrued.toFixed(2)),
+          balanceBeforePayment: parseFloat(runningBalance.toFixed(2)),
+          balanceAtPayment: parseFloat(balanceAtPayment.toFixed(2)),
+          balanceAfterPayment: parseFloat(balanceAfterPayment.toFixed(2))
+        });
+        
+        runningBalance = balanceAfterPayment;
+      }
       
       customPaymentInfo = {
-        paymentDate: paymentDate.toLocaleDateString('en-US'),
-        daysUntilPayment: daysDiff,
-        interestUntilPayment: parseFloat(interestUntilPayment.toFixed(2)),
-        balanceAtPayment: parseFloat((currentBalance + interestUntilPayment).toFixed(2)),
-        balanceAfterPayment: parseFloat(Math.max(0, currentBalance + interestUntilPayment - monthlyPayment).toFixed(2))
+        totalPayments: customPayments.length,
+        payments: paymentDetails,
+        finalBalance: parseFloat(runningBalance.toFixed(2)),
+        totalPaid: parseFloat(customPayments.reduce((sum, p) => sum + parseFloat(p.amount), 0).toFixed(2)),
+        totalInterestAccrued: parseFloat(paymentDetails.reduce((sum, p) => sum + p.interestAccrued, 0).toFixed(2))
       };
     }
 
