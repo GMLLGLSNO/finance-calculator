@@ -79,6 +79,7 @@ module.exports = async (req, res) => {
     const maxMonths = 600; // Safety limit (50 years)
 
     // Check if payment is sufficient to pay off debt
+    // Note: Even with a grace period, payment must exceed monthly interest to eventually pay off the balance
     if (monthlyPayment <= monthlyInterest && annualRate > 0) {
       res.status(400).json({
         error: 'Payment amount is too low to pay off the balance. It must be greater than the monthly interest.',

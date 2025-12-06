@@ -167,8 +167,9 @@ form.addEventListener('submit', async (e) => {
 const numericInputs = document.querySelectorAll('input[type="number"]');
 numericInputs.forEach(input => {
     input.addEventListener('input', function() {
-        // Remove negative sign if present
-        if (this.value < 0) {
+        // Ensure non-negative values
+        const value = parseFloat(this.value);
+        if (!isNaN(value) && value < 0) {
             this.value = 0;
         }
     });
