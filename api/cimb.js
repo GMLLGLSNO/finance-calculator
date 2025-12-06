@@ -26,7 +26,8 @@ module.exports = async (req, res) => {
     // Validate inputs
     if (loanAmount === undefined || loanAmount === null || 
         interestRatePerMonth === undefined || interestRatePerMonth === null ||
-        !startDate || !endDate) {
+        startDate === undefined || startDate === null || !startDate ||
+        endDate === undefined || endDate === null || !endDate) {
       res.status(400).json({ 
         error: 'Missing required parameters: loanAmount, startDate, endDate, interestRatePerMonth' 
       });
@@ -80,14 +81,14 @@ module.exports = async (req, res) => {
     
     // Return results
     res.status(200).json({
-      loanAmount: parseFloat(amount.toFixed(2)),
-      interestRatePerMonth: parseFloat(monthlyRate.toFixed(2)),
+      loanAmount: Number(amount.toFixed(2)),
+      interestRatePerMonth: Number(monthlyRate.toFixed(2)),
       dateRange: dateRange,
       startDate: start.toLocaleDateString('en-US'),
       endDate: end.toLocaleDateString('en-US'),
       days: daysDiff,
-      interest: parseFloat(periodInterest.toFixed(2)),
-      totalAmount: parseFloat((amount + periodInterest).toFixed(2))
+      interest: Number(periodInterest.toFixed(2)),
+      totalAmount: Number((amount + periodInterest).toFixed(2))
     });
 
   } catch (error) {

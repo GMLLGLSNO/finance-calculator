@@ -148,7 +148,7 @@ This follows the industry-standard 365-day convention for converting APR to dail
   "interestRatePerMonth": 1.5
 }
 ```
-Result: RM 616.44 interest
+Result: RM 739.73 interest
 
 ### Calculate 90-day interest on RM 100,000 at 2% per month
 ```json
