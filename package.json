@@ -1,0 +1,17 @@
+{
+  "name": "finance-calculator",
+  "version": "1.0.0",
+  "description": "Revolving credit calculator with amortization schedule",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "vercel build",
+    "deploy": "vercel"
+  },
+  "keywords": ["finance", "calculator", "credit", "amortization"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  }
+}

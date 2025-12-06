@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revolving Credit Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💳 Revolving Credit Calculator</h1>
+            <p class="subtitle">Calculate your credit card payoff schedule and interest</p>
+        </header>
+
+        <div class="calculator">
+            <form id="creditForm">
+                <div class="form-section">
+                    <h2>Credit Information</h2>
+                    
+                    <div class="form-group">
+                        <label for="creditLimit">Credit Limit ($)</label>
+                        <input type="number" id="creditLimit" name="creditLimit" step="0.01" min="0" placeholder="e.g., 5000">
+                        <small>Optional: Your total credit limit</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="balance">Current Balance ($) *</label>
+                        <input type="number" id="balance" name="balance" step="0.01" min="0" required placeholder="e.g., 3000">
+                        <small>Required: Your current outstanding balance</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="interestRate">Annual Interest Rate (%) *</label>
+                        <input type="number" id="interestRate" name="interestRate" step="0.01" min="0" required placeholder="e.g., 18.99">
+                        <small>Required: Your APR (Annual Percentage Rate)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Payment Mode *</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="paymentMode" value="monthly" checked>
+                                <span>Monthly Payment</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="paymentMode" value="custom">
+                                <span>Custom Payment</span>
+                            </label>
+                        </div>
+                        <small>Choose payment frequency</small>
+                    </div>
+
+                    <div class="form-group" id="monthlyPaymentGroup">
+                        <label for="payment">Monthly Payment ($) *</label>
+                        <input type="number" id="payment" name="payment" step="0.01" min="0" placeholder="e.g., 150">
+                        <small>Amount you plan to pay monthly</small>
+                    </div>
+
+                    <div class="form-group hidden" id="customPaymentGroup">
+                        <label>Custom Payments</label>
+                        <div id="customPaymentsList">
+                            <div class="custom-payment-entry" data-index="0">
+                                <div class="payment-fields">
+                                    <div class="field-group">
+                                        <label>Amount ($)</label>
+                                        <input type="number" class="customPaymentAmount" step="0.01" min="0" placeholder="e.g., 500">
+                                    </div>
+                                    <div class="field-group">
+                                        <label>Date</label>
+                                        <input type="date" class="customPaymentDate">
+                                    </div>
+                                    <button type="button" class="btn-remove-payment" onclick="removePayment(0)" style="display: none;">✖</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" id="btnAddPayment" class="btn-add-payment">+ Add Another Payment</button>
+                        <small>Add one or more custom payments with amounts and dates</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gracePeriod">Grace Period (months)</label>
+                        <input type="number" id="gracePeriod" name="gracePeriod" min="0" value="0" placeholder="e.g., 0">
+                        <small>Optional: Months with no interest charged</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="startDate">Start Date (for interest calculation)</label>
+                        <input type="date" id="startDate" name="startDate">
+                        <small>Optional: Calculate interest from this date</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endDate">End Date (for interest calculation)</label>
+                        <input type="date" id="endDate" name="endDate">
+                        <small>Optional: Calculate interest to this date</small>
+                    </div>
+
+                    <button type="submit" class="btn-calculate">Calculate</button>
+                </div>
+            </form>
+
+            <div id="results" class="results hidden">
+                <div class="results-section">
+                    <h2>📊 Results Summary</h2>
+                    
+                    <div class="result-cards">
+                        <div class="card">
+                            <h3>Monthly Interest</h3>
+                            <p class="value" id="monthlyInterest">$0.00</p>
+                            <small>Interest charged per month</small>
+                        </div>
+
+                        <div class="card">
+                            <h3>Minimum Payment</h3>
+                            <p class="value" id="minimumPayment">$0.00</p>
+                            <small>Suggested minimum (2% + interest)</small>
+                        </div>
+
+                        <div class="card">
+                            <h3>New Balance</h3>
+                            <p class="value" id="newBalance">$0.00</p>
+                            <small>After your payment</small>
+                        </div>
+
+                        <div class="card">
+                            <h3>Time to Pay Off</h3>
+                            <p class="value" id="payoffTime">0 months</p>
+                            <small>At current payment rate</small>
+                        </div>
+
+                        <div class="card">
+                            <h3>Total Interest</h3>
+                            <p class="value" id="totalInterest">$0.00</p>
+                            <small>Total interest you'll pay</small>
+                        </div>
+                    </div>
+
+                    <div id="customPaymentSection" class="custom-payment-section hidden">
+                        <h3>💰 Custom Payment Details</h3>
+                        <div class="custom-payment-card">
+                            <div class="payment-summary">
+                                <p><strong>Total Payments:</strong> <span id="totalCustomPayments">0</span></p>
+                                <p><strong>Total Paid:</strong> <span id="totalPaidAmount">$0.00</span></p>
+                                <p><strong>Total Interest Accrued:</strong> <span id="totalInterestAccrued">$0.00</span></p>
+                                <p><strong>Final Balance:</strong> <span id="finalBalanceAfterPayments" class="highlight">$0.00</span></p>
+                            </div>
+                            <div id="customPaymentsDisplay" class="payments-list">
+                                <!-- Payment details will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="dateInterestSection" class="date-interest-section hidden">
+                        <h3>📆 Interest Between Dates</h3>
+                        <div class="date-interest-card">
+                            <div class="date-range">
+                                <p><strong>Period:</strong> <span id="dateRange">-</span></p>
+                                <p><strong>Days:</strong> <span id="daysBetween">-</span></p>
+                            </div>
+                            <div class="interest-amount">
+                                <p class="label">Interest Accrued</p>
+                                <p class="value" id="dateInterestAmount">$0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="amortization-section">
+                    <h2>📅 Amortization Schedule</h2>
+                    <div class="table-container">
+                        <table id="amortizationTable">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Payment</th>
+                                    <th>Principal</th>
+                                    <th>Interest</th>
+                                    <th>Remaining Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="amortizationBody">
+                                <!-- Schedule will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="error" class="error hidden"></div>
+        </div>
+
+        <footer>
+            <p>💡 Tip: Paying more than the minimum payment saves you money on interest and helps you pay off debt faster.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
