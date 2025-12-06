@@ -118,6 +118,36 @@ Calculate revolving credit payment schedule.
 }
 ```
 
+### POST /api/cimb
+
+Calculate interest for a loan amount between two dates with monthly interest rate. This is a simplified calculator that uses the same calculation method as the revolving credit date-based interest feature.
+
+**Request Body:**
+```json
+{
+  "loanAmount": 10000,           // Required: Principal loan amount
+  "startDate": "2024-01-01",     // Required: Start date (ISO format)
+  "endDate": "2024-01-31",       // Required: End date (ISO format)
+  "interestRatePerMonth": 2.5    // Required: Interest rate per month (%)
+}
+```
+
+**Response:**
+```json
+{
+  "loanAmount": 10000.00,
+  "interestRatePerMonth": 2.50,
+  "dateRange": "1/1/2024 to 1/31/2024",
+  "startDate": "1/1/2024",
+  "endDate": "1/31/2024",
+  "days": 30,
+  "interest": 246.58,
+  "totalAmount": 10246.58
+}
+```
+
+For detailed API documentation, see [CIMB_API.md](CIMB_API.md).
+
 ## Tips for Users
 
 💡 **Paying more than the minimum saves money!** The more you pay each month, the less interest you'll accumulate and the faster you'll be debt-free.
