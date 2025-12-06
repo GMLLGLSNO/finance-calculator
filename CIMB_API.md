@@ -1,7 +1,7 @@
 # CIMB Interest Calculator Endpoint
 
 ## Overview
-The `/api/cimb` endpoint provides a simplified interest calculator that requires only:
+The `/cimb` endpoint provides a simplified interest calculator that requires only:
 - Loan amount
 - Start date
 - End date  
@@ -11,7 +11,7 @@ This endpoint uses the same calculation method as the revolving credit calculato
 
 ## API Endpoint
 
-**URL:** `/api/cimb`  
+**URL:** `/cimb`  
 **Method:** `POST`  
 **Content-Type:** `application/json`
 
@@ -27,7 +27,7 @@ This endpoint uses the same calculation method as the revolving credit calculato
 ## Example Request
 
 ```bash
-curl -X POST http://localhost:3000/api/cimb \
+curl -X POST http://localhost:3000/cimb \
   -H "Content-Type: application/json" \
   -d '{
     "loanAmount": 10000,
@@ -39,7 +39,7 @@ curl -X POST http://localhost:3000/api/cimb \
 
 ```javascript
 // JavaScript example
-const response = await fetch('/api/cimb', {
+const response = await fetch('/cimb', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -173,7 +173,7 @@ npm install
 npm run dev
 
 # In another terminal, test the endpoint
-curl -X POST http://localhost:3000/api/cimb \
+curl -X POST http://localhost:3000/cimb \
   -H "Content-Type: application/json" \
   -d '{"loanAmount":1000,"startDate":"2024-01-01","endDate":"2024-01-31","interestRatePerMonth":2.5}'
 ```

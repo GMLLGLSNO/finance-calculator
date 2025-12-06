@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIMB Interest Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏦 CIMB Interest Calculator</h1>
+            <p class="subtitle">Calculate interest for a loan amount between two dates</p>
+        </header>
+
+        <div class="calculator">
+            <form id="cimbForm">
+                <div class="form-section">
+                    <h2>Loan Information</h2>
+                    
+                    <div class="form-group">
+                        <label for="loanAmount">Loan Amount (RM) *</label>
+                        <input type="number" id="loanAmount" name="loanAmount" step="0.01" min="0" required placeholder="e.g., 10000">
+                        <small>Required: Principal loan amount</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="interestRatePerMonth">Interest Rate Per Month (%) *</label>
+                        <input type="number" id="interestRatePerMonth" name="interestRatePerMonth" step="0.01" min="0" required placeholder="e.g., 2.5">
+                        <small>Required: Monthly interest rate</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="startDate">Start Date *</label>
+                        <input type="date" id="startDate" name="startDate" required>
+                        <small>Required: Start date for interest calculation</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endDate">End Date *</label>
+                        <input type="date" id="endDate" name="endDate" required>
+                        <small>Required: End date for interest calculation</small>
+                    </div>
+
+                    <button type="submit" class="btn-calculate">Calculate Interest</button>
+                </div>
+            </form>
+
+            <div id="results" class="results hidden">
+                <div class="results-section">
+                    <h2>📊 Interest Calculation Results</h2>
+                    
+                    <div class="result-cards">
+                        <div class="card">
+                            <h3>Loan Amount</h3>
+                            <p class="value" id="displayLoanAmount">RM 0.00</p>
+                            <small>Principal amount</small>
+                        </div>
+
+                        <div class="card">
+                            <h3>Interest Rate</h3>
+                            <p class="value" id="displayInterestRate">0.00%</p>
+                            <small>Per month</small>
+                        </div>
+
+                        <div class="card">
+                            <h3>Number of Days</h3>
+                            <p class="value" id="displayDays">0 days</p>
+                            <small>Between dates</small>
+                        </div>
+
+                        <div class="card">
+                            <h3>Interest Amount</h3>
+                            <p class="value" id="displayInterest">RM 0.00</p>
+                            <small>Interest for the period</small>
+                        </div>
+
+                        <div class="card">
+                            <h3>Total Amount</h3>
+                            <p class="value" id="displayTotalAmount">RM 0.00</p>
+                            <small>Loan + Interest</small>
+                        </div>
+                    </div>
+
+                    <div class="date-interest-section">
+                        <h3>📆 Date Range</h3>
+                        <div class="date-interest-card">
+                            <div class="date-range">
+                                <p><strong>Period:</strong> <span id="dateRange">-</span></p>
+                                <p><strong>Start Date:</strong> <span id="displayStartDate">-</span></p>
+                                <p><strong>End Date:</strong> <span id="displayEndDate">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="error" class="error hidden"></div>
+        </div>
+
+        <footer>
+            <p>💡 Tip: This calculator uses the standard 365-day convention for converting monthly rates to daily rates.</p>
+            <p><a href="index.html" style="color: white; text-decoration: underline;">← Back to Revolving Credit Calculator</a></p>
+        </footer>
+    </div>
+
+    <script src="cimb-script.js"></script>
+</body>
+</html>
