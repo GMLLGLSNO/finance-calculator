@@ -21,6 +21,12 @@ const customPaymentDateInput = document.getElementById('customPaymentDate');
 // Handle payment mode switching
 paymentModeRadios.forEach(radio => {
     radio.addEventListener('change', function() {
+        // Update selected class on radio option labels
+        document.querySelectorAll('.radio-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        this.closest('.radio-option').classList.add('selected');
+        
         if (this.value === 'monthly') {
             monthlyPaymentGroup.classList.remove('hidden');
             customPaymentGroup.classList.add('hidden');
@@ -38,6 +44,12 @@ paymentModeRadios.forEach(radio => {
         }
     });
 });
+
+// Set initial selected state
+const checkedRadio = document.querySelector('input[name="paymentMode"]:checked');
+if (checkedRadio) {
+    checkedRadio.closest('.radio-option').classList.add('selected');
+}
 
 // Format currency
 function formatCurrency(amount) {
@@ -151,7 +163,8 @@ form.addEventListener('submit', async (e) => {
     const endDate = document.getElementById('endDate').value;
     
     // Get payment mode
-    const paymentMode = document.querySelector('input[name="paymentMode"]:checked').value;
+    const paymentModeElement = document.querySelector('input[name="paymentMode"]:checked');
+    const paymentMode = paymentModeElement ? paymentModeElement.value : 'monthly';
     let payment, customPaymentAmount, customPaymentDate;
     
     if (paymentMode === 'monthly') {

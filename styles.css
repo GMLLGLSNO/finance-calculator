@@ -120,7 +120,7 @@ header h1 {
     color: #667eea;
 }
 
-.radio-option:has(input[type="radio"]:checked) {
+.radio-option.selected {
     border-color: #667eea;
     background: #f0f3ff;
 }
