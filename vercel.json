@@ -9,5 +9,11 @@
       "src": "cimb.js",
       "use": "@vercel/node"
     }
+  ],
+  "routes": [
+    {
+      "src": "/cimb",
+      "dest": "/cimb.js"
+    }
   ]
 }
