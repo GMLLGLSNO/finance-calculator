@@ -10,10 +10,10 @@
       "use": "@vercel/node"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/cimb",
-      "dest": "/cimb.js"
+      "source": "/cimb",
+      "destination": "/cimb.js"
     }
   ]
 }
