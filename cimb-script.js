@@ -67,11 +67,11 @@ form.addEventListener('submit', async function(e) {
  */
 function displayResults(data) {
     // Update result cards
-    document.getElementById('displayLoanAmount').textContent = `RM ${data.loanAmount.toFixed(2)}`;
+    document.getElementById('displayLoanAmount').textContent = data.loanAmount.toFixed(2);
     document.getElementById('displayInterestRate').textContent = `${data.interestRatePerMonth.toFixed(2)}%`;
     document.getElementById('displayDays').textContent = `${data.days} days`;
-    document.getElementById('displayInterest').textContent = `RM ${data.interest.toFixed(2)}`;
-    document.getElementById('displayTotalAmount').textContent = `RM ${data.totalAmount.toFixed(2)}`;
+    document.getElementById('displayInterest').textContent = data.interest.toFixed(2);
+    document.getElementById('displayTotalAmount').textContent = data.totalAmount.toFixed(2);
     
     // Update date range
     document.getElementById('dateRange').textContent = data.dateRange;
