@@ -4,6 +4,16 @@
     {
       "src": "api/**/*.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "cimb.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/cimb",
+      "destination": "/cimb.js"
     }
   ]
 }

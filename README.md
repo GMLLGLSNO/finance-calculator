@@ -118,7 +118,7 @@ Calculate revolving credit payment schedule.
 }
 ```
 
-### POST /api/cimb
+### POST /cimb
 
 Calculate interest for a loan amount between two dates with monthly interest rate. This is a simplified calculator that uses the same calculation method as the revolving credit date-based interest feature.
 
