@@ -34,25 +34,46 @@ form.addEventListener('submit', async function(e) {
     }
     
     try {
-        // Make API call
-        const response = await fetch('/cimb', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                loanAmount: loanAmount,
-                interestRatePerMonth: interestRatePerMonth,
-                startDate: startDate,
-                endDate: endDate
-            })
-        });
+        // Parse dates
+        const start = new Date(startDate);
+        const end = new Date(endDate);
         
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.error || 'Calculation failed');
+        // Validate dates
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            throw new Error('Invalid date format');
         }
+
+        if (end <= start) {
+            throw new Error('End date must be after start date');
+        }
+
+        // Calculate days between dates
+        // Uses simple date arithmetic for date-only inputs (no time components)
+        const daysDiff = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+        
+        // Calculate daily interest rate from monthly rate
+        // Convert monthly percentage rate to daily rate using standard 365-day convention
+        // This matches the revolving credit calculation approach
+        const annualRate = interestRatePerMonth * 12;
+        const dailyRate = annualRate / 100 / 365;
+        
+        // Calculate interest for the period
+        const periodInterest = loanAmount * dailyRate * daysDiff;
+        
+        // Format date range
+        const dateRange = `${start.toLocaleDateString('en-US')} to ${end.toLocaleDateString('en-US')}`;
+        
+        // Prepare result data
+        const data = {
+            loanAmount: Number(loanAmount.toFixed(2)),
+            interestRatePerMonth: Number(interestRatePerMonth.toFixed(2)),
+            dateRange: dateRange,
+            startDate: start.toLocaleDateString('en-US'),
+            endDate: end.toLocaleDateString('en-US'),
+            days: daysDiff,
+            interest: Number(periodInterest.toFixed(2)),
+            totalAmount: Number((loanAmount + periodInterest).toFixed(2))
+        };
         
         // Display results
         displayResults(data);
